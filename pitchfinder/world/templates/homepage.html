@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Pitch Finder - Home
+{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Welcome to Pitchfinder</h1>
+        <p class="lead">
+            Find the best pitches across Dublin with a simple click. If you're playing football, rugby or even GAA, PitchFinder has the one for you.
+        </p>
+        <hr class="my-4">
+        <p>
+            Click on the  interactive map to view all the information available for every pitch you desire. Its only a click away!
+        </p>
+        <!-- Updated Button: Changed 'btn-primary' to 'btn-success' for green color -->
+        <a class="btn btn-success btn-lg" href="{% url 'map' %}" role="button">Browse Pitches</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>What are the benefits?</h2>
+            <ul class="list-group">
+                <li class="list-group-item">Comprehensive list of Dublin pitches</li>
+                <li class="list-group-item">Interactive map for easy navigation</li>
+                <li class="list-group-item">New pitches getting added constantly</li>
+                <li class="list-group-item">Live location tracking while viewing pitches</li>
+                <li class="list-group-item">Lots more to come!</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h2>Explore the Pitches of Dublin</h2>
+            <div id="homepage-map" style="height: 300px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Initialize a simple map for the homepage -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map centered on Dublin
+        var map = L.map('homepage-map').setView([53.3498, -6.2603], 11);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add a few sample hardcoded red markers
+        var redIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        var sampleMarkers = [
+            { lat: 53.3385, lng: -6.2654, popup: "<b>Digges Street</b><br />Football pitch" },
+            { lat: 53.3776, lng: -6.2517, popup: "<b>Whitehall Stadium</b><br />Football pitch" },
+            { lat: 53.3249, lng: -6.2346, popup: "<b>Herbert Park</b><br />Football pitch" }
+        ];
+
+        sampleMarkers.forEach(function(marker) {
+            L.marker([marker.lat, marker.lng], { icon: redIcon })
+                .addTo(map)
+                .bindPopup(marker.popup);
+        });
+    });
+</script>
+{% endblock content %}

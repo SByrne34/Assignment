@@ -1,0 +1,40 @@
+services:
+  pitchfinder:
+    container_name: pitchfinder
+    build:
+      context: .
+    volumes:
+      - ./pitchfinder:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgis
+
+  postgis:
+    container_name: postgis
+    image: postgis/postgis:15-3.3
+    environment:
+      POSTGRES_USER: stephen
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: gis
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stephen -d gis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - "20080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: stephen.byrne@tudublin.ie
+      PGADMIN_DEFAULT_PASSWORD: password
+    depends_on:
+      - postgis
+
+volumes:
+  postgis_data:

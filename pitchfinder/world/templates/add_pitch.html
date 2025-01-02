@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Pitchfinder - Add New Pitch
+{% endblock title %}
+
+{% block content %}
+    <div class="container" style="max-width: 800px; margin-top: 50px; padding: 40px; background-color: white; border-radius: 15px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
+        <h1 class="text-center" style="font-size: 2.5rem; color: #343a40; font-weight: bold;">Add New Pitch</h1>
+
+        <form method="POST" style="margin-top: 30px;">
+            {% csrf_token %}
+            <div class="form-group mb-4">
+                <label for="name" style="font-weight: bold;">Pitch Name</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Enter pitch name" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="address" style="font-weight: bold;">Pitch Address</label>
+                <input type="text" id="address" name="address" class="form-control" placeholder="Enter pitch address" required>
+            </div>
+            <button type="submit" class="btn btn-danger w-100" style="padding: 12px; font-size: 1.1rem; font-weight: bold;">Add Pitch</button>
+        </form>
+    </div>
+{% endblock %}
