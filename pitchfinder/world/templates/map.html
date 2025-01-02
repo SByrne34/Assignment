@@ -9,32 +9,32 @@ Pitchfinder - Map
 <button onclick="updateLocation()">Update Location</button>
 
 <script>
-    // Check if location values are set; default to a location if not
-    var initialLat = {{ location.y|default:53.45 }};  // Default to North Dublin lat
-    var initialLng = {{ location.x|default:-6.15 }};  // Default to North Dublin lng
+    // Sets default location values if a location value is not set, in this case it is set for Dublin
+    var initialLat = {{ location.y|default:53.45 }};  
+    var initialLng = {{ location.x|default:-6.15 }};  
 
     console.log('Initial Latitude:', initialLat, 'Initial Longitude:', initialLng);
 
-    // Create the map and set initial view to the user's location, or use default coordinates
+    // Map is made centred and either the updated location or default values
     var map = L.map('map').setView([initialLat, initialLng], 9);
 
-    // Add tile layer to the map (OpenStreetMap)
+    // OpenStreetMap is used for the tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // *** Custom Icon Definitions ***
-    // Red Icon for Hardcoded Markers
+    
+    // Red Icon will be used for pitch markers
     var redIcon = new L.Icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-        iconSize: [25, 41],          // size of the icon
-        iconAnchor: [12, 41],        // point of the icon which will correspond to marker's location
-        popupAnchor: [1, -34],       // point from which the popup should open relative to the iconAnchor
-        shadowSize: [41, 41]          // size of the shadow
+        iconSize: [25, 41],          
+        iconAnchor: [12, 41],        
+        popupAnchor: [1, -34],       
+        shadowSize: [41, 41]          
     });
 
-    // Blue Icon for Dynamic User Location Marker
+    // Blue icon will be used for location updater
     var blueIcon = new L.Icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
@@ -43,9 +43,9 @@ Pitchfinder - Map
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
     });
-    // *** End of Custom Icon Definitions ***
+    
 
-    // Add a dynamic marker if there's a location (initially redIcon, can be updated to blueIcon)
+    // Marker is used if live location is available
     {% if location %}
         userMarker = L.marker([{{ location.y }}, {{ location.x }}], { icon: blueIcon })  // Using blueIcon initially
             .addTo(map)
@@ -53,8 +53,8 @@ Pitchfinder - Map
             .openPopup();
     {% endif %}
 
-    // *** Hardcoded Markers Section ***
-    // Define an array of hardcoded markers with latitude, longitude, and popup content
+  
+    // Array is set up for values needed for pitch markers
     var pitchMarkers = [
         {
             lat: 53.3385, 
@@ -86,31 +86,32 @@ Pitchfinder - Map
             lng: -6.0939, 
             popup: "<b>St. Maur's GAA Club</b><br />GAA pitch"
         },
-        // Add more hardcoded markers as needed
+        
     ];
 
 
-    // Iterate over the hardcoded markers array and add each marker to the map with the red icon
+    // Gives pitch markers the red icon
     pitchMarkers.forEach(function(marker) {
         L.marker([marker.lat, marker.lng], { icon: redIcon }).addTo(map)
             .bindPopup(marker.popup);
     });
-    // *** End of Hardcoded Markers Section ***
+    
 
-    // Variables for the dynamic marker and accuracy circle
+    // This marker variable will be used for the live location
     var userMarker;
+    // A circle will be defined for the live location
     var circle;
 
-    // Function to update the map with new marker and accuracy circle
+    // This changes the map to update it with the new live location, first removing the marker and circle of older location
     function updateMap(latitude, longitude, accuracy) {
         if (userMarker) {
-            map.removeLayer(userMarker);  // Remove the old marker
+            map.removeLayer(userMarker);  
         }
         if (circle) {
-            map.removeLayer(circle);  // Remove the old circle
+            map.removeLayer(circle);  
         }
 
-        // Add the new marker and circle with the blue icon
+        // New marker is added with blue icon
         userMarker = L.marker([latitude, longitude], { icon: blueIcon })  // Using blueIcon for user location
             .addTo(map)
             .bindPopup('Your Location')
@@ -118,46 +119,49 @@ Pitchfinder - Map
 
         circle = L.circle([latitude, longitude], { radius: accuracy }).addTo(map);
 
-        // Recenter the map view
+        // This recentres the map view
         map.setView([latitude, longitude], 9);
     }
 
-    // Function to get the user's current geolocation and update the map
+    // This attempts to use geolocation to find the location of the user and update the map
     function updateLocation() {
+        // Gives an error if the browsper is not supported
         if (!navigator.geolocation) {
             alert('Geolocation is not supported by your browser.');
             return;
         }
-
+        // Defines variables needed
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
                 var accuracy = position.coords.accuracy;
+                var longitude = position.coords.longitude;
+               
 
-                // Update the map
+                // Updates the map accordingly
                 updateMap(latitude, longitude, accuracy);
 
-                // Send location data to Django view via a POST request
+                // The django view set up will recieve the data collected
                 fetch('{% url "update_location" %}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token for security
+                        'X-CSRFToken': '{{ csrf_token }}'  
                     },
                     body: 'latitude=' + latitude + '&longitude=' + longitude
                 })
+                // Console logs set up in case of success and errors
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('Location updated successfully');
+                        console.log('Location updated!');
                     } else {
-                        console.error('Error updating location');
+                        console.error('Could not update location');
                     }
                 });
             },
             function(error) {
-                console.error('Error getting location:', error);
+                console.error('Errors with getting the location:', error);
             }
         );
     }

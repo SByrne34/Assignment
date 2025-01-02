@@ -12,21 +12,30 @@ from world.serializers import PitchSerializer
 from rest_framework import generics
 from geopy.geocoders import Nominatim
 from rest_framework import generics
+# from django.http import HttpResponse
+# from django.conf import settings
+# import os
+# from django.views.generic import View
 
+# View that provides the homepage of pitchfinder
 def homepage(request):
-    return render(request, 'homepage.html')  # Renders the "homepage.html" template
+    return render(request, 'homepage.html')  
 
-# View that reads the locations from world borders and passes them to the map
+# View that provides the map for the pitches and live location
+# User login is required to operate map page
 @login_required
 def map_view(request):
     try:
+        # User profile is required to obtain live location
         user_profile = Profile.objects.get(user=request.user)
         location = user_profile.location
+        # Sets live location to default if no user profile is present
     except Profile.DoesNotExist:
         location = None
 
     return render(request, 'map.html', {'user': request.user, 'location': location})
 
+# View that provides updated location when button is clicked
 def update_location(request):   
     if request.method == 'POST':
         latitude = request.POST.get('latitude')
@@ -37,7 +46,7 @@ def update_location(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
-# Login view
+# View that provides the login page for pitchfinder
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -50,7 +59,7 @@ def login_view(request):
 
     return render(request, 'login.html', {'form': form})
 
-# Logout view
+# View that provides the ability to log out and redirects to login page
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -83,7 +92,7 @@ class PitchUpdateRetreiveView(generics.RetrieveUpdateDestroyAPIView):
         print(pnt)
         serializer.save(location=pnt)
 
-
+# View that provides a pitch addition system that is present in admin and rest framework
 def add_pitch_view(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -91,32 +100,31 @@ def add_pitch_view(request):
 
         if name and address:
             try:
-                # Get latitude and longitude from the address
+                # The address given will have the lng and lat calulcated
                 location = geolocator.geocode(address)
                 if location:
                     lat = location.latitude
                     lng = location.longitude
                     point = Point(lng, lat)
 
-                #Save the new Pitch with location
+                # The pitch is then saved alongside the location entered for it
                     Pitch.objects.create(name=name, address=address, location=point)
-                    messages.success(request, "Pitch added successfully!")
+                    messages.success(request, "Pitch has been added!")
                     return redirect("homepage")
+                # Provides an error if the location provided is not accurate enough
                 else:
-                    messages.error(request, "Unable to determine the location for the provided address.")
+                    messages.error(request, "Can't find the location of the address provided.")
             except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
+                messages.error(request, f"Error: {str(e)}")
+        # Both values need to be entered for details to be saved
         else:
-            messages.error(request, "Both name and address fields are required.")
+            messages.error(request, "You need to enter both the address and the name.")
 
     return render(request, "add_pitch.html")
 
 
-# from django.http import HttpResponse
-# from django.conf import settings
-# import os
-# from django.views.generic import View
 
+# View for service worker which provides offline functionality when uncommented
 # class ServiceWorkerView(View):
 #     def get(self, request, *args, **kwargs):
 #         sw_path = os.path.join(settings.BASE_DIR, 'static', 'service-worker.js')
@@ -127,5 +135,5 @@ def add_pitch_view(request):
 #             response['Cache-Control'] = 'no-cache'
 #             return response
 #         except FileNotFoundError:
-#             return HttpResponse('Service Worker not found.', status=404)
+#             return HttpResponse('Service Worker cannot be found', status=404)
 

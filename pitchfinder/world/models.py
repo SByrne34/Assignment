@@ -36,7 +36,8 @@ class WorldBorder(models.Model):
 
 #Store a point location on a user's profile.
 User = get_user_model()
- 
+
+# Defines profile model 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.PointField(null=True, blank=True)
@@ -46,7 +47,7 @@ class Profile(models.Model):
     
 def set_user_location(user_id, latitude, longitude):
     user = User.objects.get(id=user_id)
-    location = Point(longitude, latitude)  # Point takes (longitude, latitude)
+    location = Point(longitude, latitude) 
    
     # Create or update the user's profile
     profile, created = Profile.objects.get_or_create(user=user)

@@ -5,6 +5,7 @@ Pitch Finder - Home
 {% endblock title %}
 
 {% block content %}
+ <!-- Description of the pitchfinder website that provides a quick overview -->
 <div class="container mt-5">
     <div class="jumbotron text-center">
         <h1 class="display-4">Welcome to Pitchfinder</h1>
@@ -15,10 +16,11 @@ Pitch Finder - Home
         <p>
             Click on the  interactive map to view all the information available for every pitch you desire. Its only a click away!
         </p>
-        <!-- Updated Button: Changed 'btn-primary' to 'btn-success' for green color -->
+        <!-- Button that leads to the map page -->
         <a class="btn btn-success btn-lg" href="{% url 'map' %}" role="button">Browse Pitches</a>
     </div>
 
+     <!-- Small list describing what is on pitchfinder -->
     <div class="row">
         <div class="col-md-6">
             <h2>What are the benefits?</h2>
@@ -30,6 +32,7 @@ Pitch Finder - Home
                 <li class="list-group-item">Lots more to come!</li>
             </ul>
         </div>
+         <!-- Small map with a few selected pitches visible -->
         <div class="col-md-6">
             <h2>Explore the Pitches of Dublin</h2>
             <div id="homepage-map" style="height: 300px;"></div>
@@ -37,18 +40,18 @@ Pitch Finder - Home
     </div>
 </div>
 
-<!-- Initialize a simple map for the homepage -->
+<!-- Script for the small map -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the map centered on Dublin
+        // Map is centred on Dublin, where the pitches are present
         var map = L.map('homepage-map').setView([53.3498, -6.2603], 11);
 
-        // Add OpenStreetMap tiles
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Add a few sample hardcoded red markers
+        // Code for the three pitches present
         var redIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
@@ -57,14 +60,14 @@ Pitch Finder - Home
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
-
-        var sampleMarkers = [
+        // Location data for the three pitches
+        var samplepitchMarkers = [
             { lat: 53.3385, lng: -6.2654, popup: "<b>Digges Street</b><br />Football pitch" },
             { lat: 53.3776, lng: -6.2517, popup: "<b>Whitehall Stadium</b><br />Football pitch" },
             { lat: 53.3249, lng: -6.2346, popup: "<b>Herbert Park</b><br />Football pitch" }
         ];
-
-        sampleMarkers.forEach(function(marker) {
+        // Using all the data just set up
+        samplepitchMarkers.forEach(function(marker) {
             L.marker([marker.lat, marker.lng], { icon: redIcon })
                 .addTo(map)
                 .bindPopup(marker.popup);

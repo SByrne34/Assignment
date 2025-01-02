@@ -6,19 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Pitchfinder{% endblock %}</title>
     
-    <!-- Bootstrap CSS (Removed Duplicate Link) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
     {% block extra_css %}
-    <!-- Placeholder for additional CSS -->
+
     {% endblock %}
 </head>
 <body>
-    <!-- Header Section -->
+    <!-- This is the header area, which will be consistent across the site -->
     <header class="bg-primary text-white text-center py-3">
         <div class="container">
             <h1>{% block header_title %}Pitchfinder{% endblock %}</h1>
@@ -26,7 +24,7 @@
         </div>
     </header>
 
-    <!-- Navigation Bar -->
+    <!-- This is the nav bar area, which will be consistent across the site -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'homepage' %}">Home</a>
@@ -40,7 +38,7 @@
                         <a class="nav-link" href="{% url 'map' %}">Map</a>
                     </li>
                     
-                    <!-- Conditional Links: Visible Only to Authenticated Users -->
+                    <!-- This area is only visible if the user is logged in -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'add_pitch' %}">Add Pitches</a>
@@ -52,12 +50,12 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <!-- Logout Link -->
+                        <!-- This url will appear if a user is logged in-->
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                         </li>
                     {% else %}
-                        <!-- Login Link -->
+                        <!-- This url will appear if a user is logged out -->
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'login' %}">Login</a>
                         </li>
@@ -67,7 +65,7 @@
         </div>
     </nav>
 
-    <!-- Messages Framework Integration -->
+    <!-- This is the area for framework involving messages-->
     <div class="container mt-3">
         {% if messages %}
             {% for message in messages %}
@@ -79,21 +77,21 @@
         {% endif %}
     </div>
 
-    <!-- Main Content -->
+    <!-- The main area of content, if none is present on other web pages -->
     <div class="container mt-4">
         {% block content %}
-        <p>Welcome to My Website!</p>
+        <p>Welcome to Pitchfinder!</p>
         {% endblock %}
     </div>
 
-    <!-- Footer -->
+    <!-- This is the footer area, which will be consistent across the website -->
     <footer class="bg-light text-center mt-4">
         <div class="container p-4">
             <p>&copy; {% now "Y" %} Pitchfinder. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle (Includes Popper) -->
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Service Worker Registration
@@ -102,17 +100,17 @@
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register("/service-worker.js")
                 .then(function(registration) {
-                    console.log('Service Worker registered with scope:', registration.scope);
+                    console.log('Service Worker has registered with scope:', registration.scope);
                 }, function(err) {
-                    console.log('Service Worker registration failed:', err);
+                    console.log('Service Worker has failed to register:', err);
                 });
             });
         }
     </script> -->
     
-    <!-- Optional JavaScript -->
+    
     {% block extra_js %}
-    <!-- Placeholder for additional JavaScript -->
+  
     </script>
     {% endblock %}
 </body>

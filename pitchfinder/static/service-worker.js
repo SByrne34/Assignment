@@ -1,37 +1,35 @@
 // // service-worker.js
 
-// const CACHE_NAME = 'pitchfinder-cache-v1';
-// const urlsToCache = [
+// const NAMEofCACHE = 'pitchfindercache';
+// const CacheURL = [
 //     '/',
-//     '/static/css/bootstrap.min.css',
 //     '/static/js/bootstrap.bundle.min.js',
+//     '/static/css/bootstrap.min.css',
 //     '/static/images/markers/marker-icon-red.png',
 // ];
 
-// // Install Event - Cache essential assets
-// self.addEventListener('install', event => {
-//     console.log('[ServiceWorker] Install');
+// self.addEventListener('download', event => {
+//     console.log('[ServiceWorker] Download');
 //     event.waitUntil(
 //         caches.open(CACHE_NAME)
 //             .then(cache => {
-//                 console.log('[ServiceWorker] Caching app shell');
-//                 return cache.addAll(urlsToCache);
+//                 console.log('[ServiceWorker] App shell is being cached now');
+//                 return cache.addAll(CacheURL);
 //             })
 //             .catch(error => {
-//                 console.error('[ServiceWorker] Failed to cache during install:', error);
+//                 console.error('[ServiceWorker] Cache was unsuccessful:', error);
 //             })
 //     );
 // });
 
-// // Activate Event - Clean up old caches
-// self.addEventListener('activate', event => {
-//     console.log('[ServiceWorker] Activate');
+// self.addEventListener('turn on', event => {
+//     console.log('[ServiceWorker] Turn on');
 //     event.waitUntil(
-//         caches.keys().then(cacheNames => {
+//         caches.keys().then(namescache => {
 //             return Promise.all(
-//                 cacheNames.map(cache => {
-//                     if (cache !== CACHE_NAME) {
-//                         console.log('[ServiceWorker] Deleting old cache:', cache);
+//                 namescache.map(cache => {
+//                     if (cache !== NAMEofCACHE) {
+//                         console.log('[ServiceWorker] Old cache is being deleted', cache);
 //                         return caches.delete(cache);
 //                     }
 //                 })
@@ -40,9 +38,8 @@
 //     );
 // });
 
-// // Fetch Event - Serve cached content when offline
 // self.addEventListener('fetch', event => {
-//     console.log('[ServiceWorker] Fetch', event.request.url);
+//     console.log('[ServiceWorker] Fetch - to provide offline content', event.request.url);
 //     event.respondWith(
 //         caches.match(event.request)
 //             .then(response => {
@@ -50,25 +47,25 @@
 //                     // Return cached asset
 //                     return response;
 //                 }
-//                 // Clone the request as it's a stream and can only be consumed once
-//                 const fetchRequest = event.request.clone();
-//                 return fetch(fetchRequest).then(
+//                 
+//                 const Requestf = event.request.clone();
+//                 return fetch(Requestf).then(
 //                     networkResponse => {
-//                         // Check for a valid response
+//                   
 //                         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
 //                             return networkResponse;
 //                         }
-//                         // Clone the response to cache it
-//                         const responseToCache = networkResponse.clone();
+//                        
+//                         const cacherepspond = networkResponse.clone();
 //                         caches.open(CACHE_NAME)
 //                             .then(cache => {
-//                                 cache.put(event.request, responseToCache);
+//                                 cache.put(event.request, cacherepspond);
 //                             });
 //                         return networkResponse;
 //                     }
 //                 ).catch(error => {
-//                     console.error('[ServiceWorker] Fetch failed:', error);
-//                     // Optionally, return a fallback page or image here
+//                     console.error('[ServiceWorker] Fetch didn't work, offline content not available:', error);
+//                    
 //                 });
 //             })
 //     );
